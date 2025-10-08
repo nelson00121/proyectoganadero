@@ -1,0 +1,31 @@
+# .NET
+/*/bin
+/*/obj
+/*/.env
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vs/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# MinIO data
+minio-data/
+
+# Docker
+*.log
+

@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # MinIO - Almacenamiento de archivos
+  minio:
+    image: minio/minio:latest
+    container_name: nelson-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - nelson-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # API GraphQL
+  api:
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    container_name: nelson-api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=${DATABASE_HOST};Port=${DATABASE_PORT};Database=${DATABASE_NAME};Uid=${DATABASE_USER};Pwd=${DATABASE_PASSWORD};
+      - JWT__Secret=${JWT_SECRET}
+      - JWT__Issuer=${JWT_ISSUER}
+      - JWT__Audience=${JWT_AUDIENCE}
+      - MinIO__Endpoint=minio
+      - MinIO__Port=9000
+      - MinIO__AccessKey=${MINIO_ACCESS_KEY:-minioadmin}
+      - MinIO__SecretKey=${MINIO_SECRET_KEY:-minioadmin}
+      - MinIO__UseSSL=${MINIO_USE_SSL:-false}
+    depends_on:
+      - minio
+    networks:
+      - nelson-network
+    restart: unless-stopped
+
+  # BackOffice - Aplicación de administración
+  backoffice:
+    build:
+      context: .
+      dockerfile: BackOffice/Dockerfile
+    container_name: nelson-backoffice
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=${DATABASE_HOST};Port=${DATABASE_PORT};Database=${DATABASE_NAME};Uid=${DATABASE_USER};Pwd=${DATABASE_PASSWORD};
+      - MinIO__Endpoint=minio
+      - MinIO__Port=9000
+      - MinIO__AccessKey=${MINIO_ACCESS_KEY:-minioadmin}
+      - MinIO__SecretKey=${MINIO_SECRET_KEY:-minioadmin}
+      - MinIO__UseSSL=${MINIO_USE_SSL:-false}
+    depends_on:
+      - minio
+    networks:
+      - nelson-network
+    restart: unless-stopped
+
+networks:
+  nelson-network:
+    driver: bridge
+
+volumes:
+  minio-data:
+    driver: local
