@@ -76,6 +76,15 @@ ssh root@TU_IP_AQUI
 Ejemplo:
 ```powershell
 ssh root@164.90.123.45
+ssh root@159.89.146.252
+contraseña= s4PG=jLY$jr3#BP
+
+"este es para el droplet numero dos "
+
+
+"ssh root@167.71.121.172
+Contraseña:K^7-79wn+c_P*xG
+"
 ```
 
 3. Escribe `yes` cuando pregunte si confías en el servidor
@@ -131,6 +140,7 @@ En el servidor:
 ```bash
 cd /opt
 git clone <URL_DE_TU_REPOSITORIO> nelson
+git clone <https://github.com/nelson00121/proyectoganadero.git > nelson
 cd nelson
 ```
 

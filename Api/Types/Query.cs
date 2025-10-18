@@ -120,20 +120,29 @@ public class Query
 
     public IQueryable<EstadosAnimale> GetEstadoAnimal([Service] DatabseContext db) => db.EstadosAnimales;
 
-
-
-
     [UsePaging]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<Raza> GetRazas([Service] DatabseContext db) => db.Razas;
 
-
-    [UseFirstOrDefault]
+    
+    //[UseFirstOrDefault]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
+
+    //solo es una prueba
+    public IQueryable<Empleado> GetEmpleados([Service] DatabseContext db) => db.Empleados;
+
+    [UsePaging]
+   // [UseFirstOrDefault]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+
+
+    //Se termina la prueba
 
     public IQueryable<Raza> GetRaza([Service] DatabseContext db) => db.Razas;
 
