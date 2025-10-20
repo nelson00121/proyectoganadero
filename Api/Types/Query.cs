@@ -4,6 +4,7 @@ using Bucket;
 using Api.Models;
 using Bycript;
 using HotChocolate.Authorization;
+using Microsoft.EntityFrameworkCore;
 namespace Api.Types;
 
 [QueryType]
@@ -14,7 +15,6 @@ public class Query
     [UseFiltering]
     [UseSorting]
     public IQueryable<Animale> GetAnimales([Service] DatabseContext db) => db.Animales;
-
 
     [UseFirstOrDefault]
     [UseProjection]
@@ -164,9 +164,9 @@ public class Query
 
         if ((user == null) || (!bycript.VerifyText(dto.Password, user.Password)))
 
-            new GraphQLException("Usuario o contraseña incorrectos");
+            throw new GraphQLException("Usuario o contraseña incorrectos");
 
-         
+
 
         return user;
 
@@ -177,6 +177,20 @@ public class Query
     // ! no
 
 
-
+    public async Task<List<HistorialAlimenticio>> GetHistorialAlimenticioByRfid(
+        string codigoRfid,
+        [Service] DatabseContext db)
+    {
+        return await db.HistorialAlimenticios
+            .Include(h => h.Animal)
+            .Include(h => h.Alimento)
+                .ThenInclude(a => a.TipoAlimento)
+            .Include(h => h.Alimento)
+                .ThenInclude(a => a.UnidadesDeMedidaAlimentos)
+            .Include(h => h.Empleado)
+            .Where(h => h.Animal.CodigoRfid == codigoRfid)
+            .OrderByDescending(h => h.FechaRegistro)
+            .ToListAsync();
+    }
 
 }
