@@ -192,5 +192,6 @@ public class Query
             .OrderByDescending(h => h.FechaRegistro)
             .ToListAsync();
     }
+    //fin de las querys
 
 }
