@@ -192,6 +192,20 @@ public class Query
             .OrderByDescending(h => h.FechaRegistro)
             .ToListAsync();
     }
+
+
+    public async Task<List<BitacorasVacuna>> VacunasByRfid(
+        string codigoRfid,
+        [Service] DatabseContext db)
+    {
+        return await db.BitacorasVacunas
+            .Include(b => b.Animal)
+            .Include(b => b.Vacuna)
+            .Where(b => b.Animal.CodigoRfid == codigoRfid)
+            .OrderByDescending(b => b.FechaRegistro)
+            .ToListAsync();
+    }
+
     //fin de las querys
 
 }
