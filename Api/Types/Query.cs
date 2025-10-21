@@ -206,6 +206,18 @@ public class Query
             .ToListAsync();
     }
 
+    public async Task<List<BitacoraPeso>> GetBitacoraPesosByRfid(
+        string codigoRfid,
+        [Service] DatabseContext db)
+    {
+        return await db.BitacoraPesos
+            .Include(b => b.Animal)
+                .ThenInclude(a => a.Raza)
+            .Where(b => b.Animal.CodigoRfid == codigoRfid)
+            .OrderByDescending(b => b.FechaRegistro)
+            .ToListAsync();
+    }
+
     //fin de las querys
 
 }
